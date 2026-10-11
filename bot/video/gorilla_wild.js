@@ -85,4 +85,16 @@ function wild(m=0,blink=false,size=2,o={}){
  const hx=o.headDX||0,hr=o.headRot||0,hy=o.headDY||0;
  return `<svg viewBox="-260 -270 520 520" overflow="visible" xmlns="http://www.w3.org/2000/svg">${torso(o.wear)}<g transform="translate(${hx},${hy}) rotate(${hr} 0 30)">${face(m,blink,o)}</g></svg>`;
 }
-module.exports={wild,FUR,FUR2,SKIN};
+
+// うしろから見たゴリラ（顔なし。自転車用のヘルメット）。(0,0)=体の中心。体の下はまるい
+function wildBack(o={}){const legK=o.pedal||0;
+ const leg=(sx,k)=>`<path d="M${sx*90} 380 Q${sx*150} ${470+k*30} ${sx*110} ${560+k*40}" fill="none" stroke="${FUR}" stroke-width="80" stroke-linecap="round"/><ellipse cx="${sx*110}" cy="${590+k*40}" rx="46" ry="26" fill="${SKIN}" stroke="${SKINL}" stroke-width="5"/>`;
+ const body=`<path d="M-120 -30 Q-215 -10 -238 90 Q-262 230 -232 330 Q-180 440 0 450 Q180 440 232 330 Q262 230 238 90 Q215 -10 120 -30 Z" fill="${FUR}"/>`
+  +`<path d="M-60 60 Q0 90 60 60 M-90 200 Q0 240 90 200" fill="none" stroke="${FURD}" stroke-width="10" stroke-linecap="round" opacity=".6"/>`
+  +`<path d="M-200 60 Q-260 0 -230 -60 M200 60 Q260 0 230 -60" fill="none" stroke="${FUR}" stroke-width="90" stroke-linecap="round"/>`;
+ const head=`<g transform="translate(0,-40)"><circle cx="-128" cy="-92" r="24" fill="${SKIN}" stroke="${SKINL}" stroke-width="5"/><circle cx="128" cy="-92" r="24" fill="${SKIN}" stroke="${SKINL}" stroke-width="5"/>`
+  +`<path d="M-128 -84 Q-146 -190 -66 -238 Q0 -276 66 -238 Q146 -190 128 -84 Q132 4 60 34 Q0 50 -60 34 Q-132 4 -128 -84 Z" fill="${FUR}"/>`
+  +`<path d="M-150 -120 Q-150 -300 0 -300 Q150 -300 150 -120 Q0 -150 -150 -120 Z" fill="#F2C94C" stroke="${LINE}" stroke-width="7"/><path d="M-60 -280 L-50 -150 M0 -295 V-145 M60 -280 L50 -150" stroke="${LINE}" stroke-width="7" opacity=".5"/>`
+  +`<path d="M-120 -120 Q-140 -60 -110 -30 M120 -120 Q140 -60 110 -30" fill="none" stroke="${LINE}" stroke-width="6"/></g>`;
+ return leg(-1,legK)+leg(1,-legK)+body+head}
+module.exports={wild,wildBack,FUR,FUR2,SKIN};

@@ -320,4 +320,40 @@ function foamHead(x,y,h,seed=8){const r=rng(seed);let s='';const n=Math.floor(10
  s+=`<circle cx="${xx}" cy="${yy}" r="${rad}" fill="#FFFFFF" stroke="#9FC4DC" stroke-width="5"/><circle cx="${xx-rad*.3}" cy="${yy-rad*.3}" r="${rad*.18}" fill="#DCEFFA"/>`}return s}
 const lerpN=(a,b,k)=>a+(b-a)*k;
 
-module.exports={shower,foamHead,bigSun,heatLines,waterBottle,swirl,tablet,camera,croissant,gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
+
+// 回るいす（背もたれと脚・車輪）。(x,y)=座面の中心
+function swivelChair(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(-90,-260,180,250,'#3B4252',`rx="40" ${sw(6)}`)+R(-100,-20,200,36,'#4C566A',`rx="14" ${sw(6)}`)+R(-12,16,24,120,'#8C96A0',sw(5))+`<path d="M-110 150 L110 150 M0 136 L-90 170 M0 136 L90 170" ${sw(10)}/>`+[-110,0,110].map(cx=>`<circle cx="${cx}" cy="170" r="16" fill="#2B2D33"/>`).join(''))}
+function monitor(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(-140,-200,280,180,'#2E3440',`rx="12" ${sw(6)}`)+R(-124,-186,248,152,'#9CC9E3',`rx="6"`)+`<path d="M-90 -140 H40 M-90 -110 H80 M-90 -80 H10" stroke="#5B7FB0" stroke-width="8" stroke-linecap="round"/>`+R(-20,-20,40,40,'#4C566A',sw(5))+R(-80,18,160,18,'#4C566A',`rx="6" ${sw(5)}`))}
+function spinLines(x,y,k=1,rx=150,ry=40){let s='';for(let i=0;i<3;i++){const yy=y-60+i*70;s+=`<path d="M${x-rx} ${yy} A${rx} ${ry} 0 0 0 ${x+rx} ${yy}" fill="none" stroke="#8FA3B3" stroke-width="10" stroke-linecap="round" opacity="${0.8*k}"/>`}return s}
+
+
+function burger(s=1){return `<g transform="scale(${s})"><path d="M-60 -6 Q-60 -56 0 -56 Q60 -56 60 -6 Z" fill="#E0A85A" ${sw(5)}/><path d="M-62 -6 Q-30 6 0 -6 Q30 6 62 -6 L60 6 H-60 Z" fill="#7BC46A" ${sw(4)}/>${R(-60,4,120,20,'#7A4A2A',`rx="8" ${sw(4)}`)}<path d="M-58 24 H58 Q58 46 0 46 Q-58 46 -58 24 Z" fill="#E0A85A" ${sw(5)}/><circle cx="-20" cy="-36" r="3" fill="#FFF3C4"/><circle cx="12" cy="-42" r="3" fill="#FFF3C4"/></g>`}
+function fries(s=1){return `<g transform="scale(${s})">${[-22,-10,2,14,26].map((x,i)=>R(x-5,-50-(i%2)*10,10,50,'#F2C94C',sw(3))).join('')}<path d="M-34 -10 L34 -10 L26 44 H-26 Z" fill="#E46B5B" ${sw(5)}/></g>`}
+function paperBag(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,`<path d="M-60 -70 H60 L66 70 H-66 Z" fill="#C8A27A" ${sw(5)}/><path d="M-60 -70 l12 14 l12 -14 l12 14 l12 -14 l12 14 l12 -14 l12 14 l12 -14 l12 14" fill="none" stroke="#9E7A52" stroke-width="4"/>`)}
+
+
+function iceBag(x,y,s=1,r=0,melt=0){const ice=melt<0.5?[[-20,-6],[6,-10],[24,4],[-6,8]].map(([dx,dy])=>R(dx-10,dy-10,20,20,'#E6F6FF',`rx="4" stroke="#7FB3D6" stroke-width="3"`)).join(''):'';
+ return G(`translate(${x},${y}) rotate(${r}) scale(${s})`,`<path d="M-56 -20 Q-60 -36 -40 -36 H40 Q60 -36 56 -20 L50 24 Q0 40 -50 24 Z" fill="#8FC9EE" opacity=".85" ${sw(5)}/>`+ice+`<path d="M-40 -36 Q0 -50 40 -36" fill="none" ${sw(5)}/>`)}
+function waterDrops(x,y,k){if(k<=0||k>=1)return '';let s='';for(let i=0;i<7;i++){const dx=(i-3)*20,dy=k*(120+i*18);s+=`<path d="M${x+dx} ${y+dy} q9 16 0 22 q-9 -6 0 -22 Z" fill="#8FD0F5" stroke="#2C6E99" stroke-width="3" opacity="${1-k}"/>`}return s}
+function bed(x,y,w=760){return R(x,y-40,w,60,'#C89B6D',P_sw(6))+R(x,y+20,w,300,'#A97C52',P_sw(6))+R(x-20,y-260,40,580,'#8A5A3B',P_sw(6))}
+const P_sw=sw;
+
+
+// うしろから見た車（文字なし）。(x,y)=下の中心
+function carBack(x,y,s=1,c='#4F86C6'){return G(`translate(${x},${y}) scale(${s})`,R(-150,-40,40,50,'#2B2D33','rx="10"')+R(110,-40,40,50,'#2B2D33','rx="10"')+`<path d="M-160 -40 V-150 Q-160 -170 -140 -175 L-110 -250 Q-100 -270 -80 -270 H80 Q100 -270 110 -250 L140 -175 Q160 -170 160 -150 V-40 Z" fill="${c}" ${sw(6)}/>`
+ +`<path d="M-100 -180 L-80 -250 H80 L100 -180 Z" fill="#CFE6F5" ${sw(5)}/>`+R(-150,-140,50,24,'#E46B5B',`rx="6" ${sw(4)}`)+R(100,-140,50,24,'#E46B5B',`rx="6" ${sw(4)}`)+R(-50,-110,100,30,'#E9EEF2',`rx="6" ${sw(4)}`))}
+// 左側を走る標識（青い丸に、自転車の絵と左向きの矢印）
+function keepLeftSign(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,`<path d="M0 0 V260" stroke="#8C96A0" stroke-width="16"/><path d="M0 0 V260" ${sw(4)} fill="none"/>`+`<circle cx="0" cy="-70" r="80" fill="#2F6DB5" ${sw(6)}/>`
+ +`<g transform="translate(0,-100)" stroke="#fff" stroke-width="6" fill="none"><circle cx="-26" cy="10" r="16"/><circle cx="26" cy="10" r="16"/><path d="M-26 10 L-6 -14 L18 -14 L26 10 M-6 -14 L0 10 L-26 10"/></g>`
+ +`<path d="M44 -36 H-30 M-6 -56 L-34 -36 L-6 -16" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>`)}
+// 小さな自転車（うしろから）。(x,y)=後輪の下
+function tinyBikeBack(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(-20,-150,40,150,'#2B2D33','rx="20"')+R(-30,-170,60,30,'#C9D2D9',`rx="10" ${sw(5)}`)+R(-14,-120,28,22,'#E46B5B',`rx="6" ${sw(4)}`)+R(-40,-210,80,26,'#3B4252','rx="12"'))}
+function bell(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,`<path d="M-16 6 Q-16 -18 0 -18 Q16 -18 16 6 Z" fill="#F2C94C" ${sw(4)}/><circle cx="0" cy="-22" r="4" fill="${K}"/>`)}
+
+
+// 回覧板（板にはさんだ紙。文字なし）。中心が原点
+function clipboard(s=1){return `<g transform="scale(${s})">${R(-70,-90,140,180,'#B98A5E',`rx="10" ${sw(5)}`)}${R(-56,-70,112,148,'#FFFFFF',sw(3))}${R(-30,-100,60,26,'#8C96A0',`rx="6" ${sw(4)}`)}<path d="M-40 -40 H40 M-40 -16 H40 M-40 8 H24 M-40 32 H36" stroke="#9AA6B2" stroke-width="6" stroke-linecap="round"/></g>`}
+// 郵便受け（柱つき）。(x,y)=柱の下
+function mailbox(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(-10,-200,20,200,'#8A6A4A',sw(4))+R(-70,-300,140,110,'#E46B5B',`rx="14" ${sw(6)}`)+R(-46,-270,92,16,'#3A3026',`rx="6"`))}
+
+module.exports={clipboard,mailbox,carBack,keepLeftSign,tinyBikeBack,bell,iceBag,waterDrops,bed,burger,fries,paperBag,swivelChair,monitor,spinLines,shower,foamHead,bigSun,heatLines,waterBottle,swirl,tablet,camera,croissant,gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
