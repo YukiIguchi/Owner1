@@ -3,7 +3,7 @@
 // 表示は lib.cjs が x=-260 y=-270 width=520 height=520 で置く（viewBox と同じ大きさ）。
 //   m      : 口の開き 0〜1
 //   blink  : true で目を閉じる
-//   o.headDX / o.headRot : 頭だけ横に動かす・かたむける（首ふり）
+//   o.headDX / o.headRot / o.headDY : 頭だけ横・下に動かす・かたむける（首ふり・うなずき）
 //   o.face : 'normal' / 'happy'（にっこり）/ 'shock'（目を丸く）/ 'worried'（こまり顔）/ 'calm'（おだやか）/ 'sleep'（ねむる）/ 'dizzy'
 //   o.look : [dx,dy] 黒目の向き（-1〜1）
 //   o.blown: 0〜1 頭の毛が風で後ろ（画面の左）になびく
@@ -82,7 +82,7 @@ function face(m,blink,o){
 }
 
 function wild(m=0,blink=false,size=2,o={}){
- const hx=o.headDX||0,hr=o.headRot||0;
- return `<svg viewBox="-260 -270 520 520" overflow="visible" xmlns="http://www.w3.org/2000/svg">${torso(o.wear)}<g transform="translate(${hx},0) rotate(${hr} 0 30)">${face(m,blink,o)}</g></svg>`;
+ const hx=o.headDX||0,hr=o.headRot||0,hy=o.headDY||0;
+ return `<svg viewBox="-260 -270 520 520" overflow="visible" xmlns="http://www.w3.org/2000/svg">${torso(o.wear)}<g transform="translate(${hx},${hy}) rotate(${hr} 0 30)">${face(m,blink,o)}</g></svg>`;
 }
 module.exports={wild,FUR,FUR2,SKIN};

@@ -76,8 +76,12 @@ def mouth(a):
     return sm
 
 
-def make_voice(phrase, work):
-    """ふつう・ゆっくり の2つの声と、オチの時間割を作る。戻り値：(ochi dict, 音声 wav のパス)"""
+MIN_TOTAL = 12.0   # 動画全体の最短の長さ（秒）
+
+
+def make_voice(phrase, work, gag_dur=5.6):
+    """ふつう・ゆっくり の2つの声と、オチの時間割を作る。戻り値：(ochi dict, 音声 wav のパス)
+    フレーズが短いときは、動画が MIN_TOTAL 秒になるよう終わりの余白をのばす"""
     text = phrase.get('say') or plain(phrase['ja'])
     use_vv = voicevox_ok()
     a = []
@@ -89,7 +93,9 @@ def make_voice(phrase, work):
             tts_openjtalk(text, speed, p)
         a.append(read_wav(p))
     sil = lambda s: np.zeros(int(round(s * SR)), dtype=np.float32)
-    track = np.concatenate([sil(LEAD), a[0], sil(GAP), a[1], sil(TAIL)])
+    body = LEAD + len(a[0]) / SR + GAP + len(a[1]) / SR
+    tail = max(TAIL, MIN_TOTAL - (gag_dur - XFADE) - body)
+    track = np.concatenate([sil(LEAD), a[0], sil(GAP), a[1], sil(tail)])
     frames = int(np.ceil(len(track) / SR * FPS))
     env = np.zeros(frames)
     speed = np.zeros(frames, dtype=int)

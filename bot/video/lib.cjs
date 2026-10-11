@@ -33,9 +33,11 @@ function arm(sx,sy,tx,ty,o={}){const {kind='point',item='',reach=125,U=150,F=140
 // ゴリラ（上半身）。(x,y)=体の中心。o.right / o.left = {tx,ty,kind,item,...} で腕を動かす。なければ下におろす
 function down(sx,sy,dir){const an=dir>0?Math.PI*0.47:Math.PI*0.53,x2=sx+Math.cos(an)*230,y2=sy+Math.sin(an)*230;return shoulder(sx,sy)+seg(sx,sy,62,x2,y2,50)}
 function gorilla(x,y,o={}){const {m=0,blink=false,nod=0,headRot=0,rot=0,dy=0,s=1,right=null,left=null}=o;
- const body=wild(m,blink,2,{noRightArm:true,noLeftArm:true,headDX:nod*1.4,headRot:headRot+nod*.5,face:o.face,look:o.look,blown:o.blown,wear:o.wear,wet:o.wet,flush:o.flush}).replace('<svg ','<svg x="-260" y="-270" width="520" height="520" ');
+ const body=wild(m,blink,2,{noRightArm:true,noLeftArm:true,headDX:nod*1.4,headRot:headRot+nod*.5,headDY:o.nodY||0,face:o.face,look:o.look,blown:o.blown,wear:o.wear,wet:o.wet,flush:o.flush}).replace('<svg ','<svg x="-260" y="-270" width="520" height="520" ');
  const R=right?arm(175,140,right.tx-x,right.ty-y-dy,right):down(175,140,1);const L=left?arm(-175,140,left.tx-x,left.ty-y-dy,left):down(-175,140,-1);
- return `<g transform="translate(${x},${y+dy}) rotate(${rot}) scale(${s})">${body}${R}${L}</g>`}
+ // o.mid：体と腕のあいだに描く物（画面の座標で）。両腕でかかえる物などに使う
+ const mid=o.mid?`<g transform="scale(${1/s}) rotate(${-rot}) translate(${-x},${-(y+dy)})">${o.mid}</g>`:'';
+ return `<g transform="translate(${x},${y+dy}) rotate(${rot}) scale(${s})">${body}${mid}${R}${L}</g>`}
 // 人（特定の国や人種に見えないシンプルな形）。face: smile/neutral/shock/happy/worried/dizzy/calm。hand: [x,y]（人の座標系）
 // 追加の指定：hand2（画面の右側の腕）、hk/hk2=手の形 'fist'/'thumb'/'open'/'point'、cross（腕組み）、headRot/headDX（首をかしげる・ふる）、
 //   hairColor、glasses、headphones、cap（ぼうしの色）、coat（白衣）、steth（聴診器）、blink、look=[dx,dy]、talk=口の開き 0〜1

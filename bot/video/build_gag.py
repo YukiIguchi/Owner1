@@ -22,7 +22,7 @@ def build(nn):
     gag_frames = len(glob.glob(os.path.join(work, 'g[0-9][0-9][0-9][0-9].png')))
     # 2. 声とオチの時間割
     phrase = json.load(open(os.path.join(VIDEO, 'phrases.json'), encoding='utf-8'))[nn]
-    ochi, wav = assemble.make_voice(phrase, work)
+    ochi, wav = assemble.make_voice(phrase, work, gag_frames / assemble.FPS)
     json.dump(ochi, open(os.path.join(work, 'ochi.json'), 'w', encoding='utf-8'), ensure_ascii=False)
     # 3. オチのコマ
     subprocess.run(['node', os.path.join(VIDEO, 'frames.cjs'), work], check=True, env=env)
