@@ -77,6 +77,7 @@ def mouth(a):
 
 
 MIN_TOTAL = 12.0   # 動画全体の最短の長さ（秒）
+MAX_TOTAL = 15.0   # これより長くなりそうなときは、間をつめる
 
 
 def make_voice(phrase, work, gag_dur=5.6):
@@ -84,28 +85,32 @@ def make_voice(phrase, work, gag_dur=5.6):
     フレーズが短いときは、動画が MIN_TOTAL 秒になるよう終わりの余白をのばす"""
     text = phrase.get('say') or plain(phrase['ja'])
     use_vv = voicevox_ok()
-    a = []
-    for name, speed in (('normal', 1.0), ('slow', SLOW)):
+
+    def say(name, speed):
         p = os.path.join(work, f'voice_{name}.wav')
-        if use_vv:
-            tts_voicevox(text, speed, p)
-        else:
-            tts_openjtalk(text, speed, p)
-        a.append(read_wav(p))
-    sil = lambda s: np.zeros(int(round(s * SR)), dtype=np.float32)
-    body = LEAD + len(a[0]) / SR + GAP + len(a[1]) / SR
-    tail = max(TAIL, MIN_TOTAL - (gag_dur - XFADE) - body)
-    track = np.concatenate([sil(LEAD), a[0], sil(GAP), a[1], sil(tail)])
+        (tts_voicevox if use_vv else tts_openjtalk)(text, speed, p)
+        return read_wav(p)
+
+    a = [say('normal', 1.0), say('slow', SLOW)]
+    gap, tail0 = GAP, TAIL
+    total = lambda: gag_dur - XFADE + LEAD + len(a[0]) / SR + gap + len(a[1]) / SR + tail0
+    if total() > MAX_TOTAL:   # 長すぎるときは、ゆっくりを少し速めにして、間を短くする
+        a[1] = say('slow', SLOW + 0.08)
+        gap, tail0 = 0.7, 0.9
+    body = LEAD + len(a[0]) / SR + gap + len(a[1]) / SR
+    tail = max(tail0, MIN_TOTAL - (gag_dur - XFADE) - body)
+    sil = lambda sec: np.zeros(int(round(sec * SR)), dtype=np.float32)
+    track = np.concatenate([sil(LEAD), a[0], sil(gap), a[1], sil(tail)])
     frames = int(np.ceil(len(track) / SR * FPS))
     env = np.zeros(frames)
     speed = np.zeros(frames, dtype=int)
     f0 = int(LEAD * FPS)
     m0 = mouth(a[0])
     env[f0:f0 + len(m0)] = m0[:max(0, frames - f0)]
-    f1 = int(round((LEAD + len(a[0]) / SR + GAP) * FPS))
+    f1 = int(round((LEAD + len(a[0]) / SR + gap) * FPS))
     m1 = mouth(a[1])
     env[f1:f1 + len(m1)] = m1[:max(0, frames - f1)]
-    speed[int(round((LEAD + len(a[0]) / SR + GAP * 0.5) * FPS)):] = 1
+    speed[int(round((LEAD + len(a[0]) / SR + gap * 0.5) * FPS)):] = 1
     out = os.path.join(work, 'ochi.wav')
     with wave.open(out, 'wb') as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)

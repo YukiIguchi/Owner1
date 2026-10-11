@@ -255,4 +255,39 @@ function parrot(x,y,s=1,open=0,dir=-1){const o=open*0.6;return G(`translate(${x}
  +`<path d="M-40 160 H40" stroke="#8A5A3B" stroke-width="14" stroke-linecap="round"/>`)}
 const nightcap=(x,y,s=1,r=0)=>G(`translate(${x},${y}) rotate(${r}) scale(${s})`,`<path d="M-120 20 Q-40 -150 120 -60 Q60 -10 120 20 Z" fill="#7FA7D6" ${sw(6)}/><path d="M-130 20 Q0 -10 130 20 Q0 50 -130 20 Z" fill="#FFFFFF" ${sw(6)}/><circle cx="130" cy="-62" r="26" fill="#FFFFFF" ${sw(5)}/>`);
 
-module.exports={nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
+
+// 温水洗浄便座の操作パネル（ボタンは絵の記号だけ）。pressed=押しているボタンの番号
+function washletPanel(x,y,pressed=-1,s=1){const icons=[
+ `<rect x="-14" y="-14" width="28" height="28" rx="4" fill="#E46B5B"/>`,
+ `<path d="M0 -18 Q14 0 0 14 Q-14 0 0 -18 Z" fill="#4F86C6"/><path d="M-14 16 Q0 24 14 16" fill="none" stroke="#4F86C6" stroke-width="4"/>`,
+ `<path d="M-14 12 L-6 -12 M0 12 L0 -16 M14 12 L6 -12" stroke="#4F86C6" stroke-width="5" stroke-linecap="round"/>`,
+ `<path d="M-16 -8 q8 -8 16 0 t16 0 M-16 6 q8 -8 16 0 t16 0" fill="none" stroke="#5B6B7A" stroke-width="5" stroke-linecap="round"/>`,
+ `<path d="M-12 0 H12 M0 -12 V12" stroke="#2B2D33" stroke-width="6" stroke-linecap="round"/>`,
+ `<path d="M-12 0 H12" stroke="#2B2D33" stroke-width="6" stroke-linecap="round"/>`,
+ `<path d="M-6 10 V-14 L12 -18 V6" fill="none" stroke="#2B2D33" stroke-width="5"/><circle cx="-10" cy="10" r="6" fill="#2B2D33"/><circle cx="8" cy="6" r="6" fill="#2B2D33"/>`,
+ `<path d="M-8 -12 A16 16 0 1 0 8 -12" fill="none" stroke="#2B2D33" stroke-width="5" stroke-linecap="round"/><path d="M0 -18 V0" stroke="#2B2D33" stroke-width="5" stroke-linecap="round"/>`];
+ let b='';icons.forEach((ic,i)=>{const bx=-60+(i%2)*120,by=-150+Math.floor(i/2)*86,p=i===pressed?6:0;b+=R(bx-46,by-34+p,92,68,i===pressed?'#DCE8F5':'#FFFFFF',`rx="14" ${sw(5)}`)+`<g transform="translate(${bx},${by+p})">${ic}</g>`});
+ return G(`translate(${x},${y}) scale(${s})`,R(-130,-210,260,400,'#F4F6F8',`rx="30" ${sw(6)}`)+b)}
+// 水の線（下から顔へ）
+function waterJet(x1,y1,x2,y2,k=1){const mx=(x1+x2)/2+80,my=Math.min(y1,y2)-120;return `<path d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" fill="none" stroke="#2C6E99" stroke-width="30" stroke-linecap="round" opacity="${k}"/><path d="M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}" fill="none" stroke="#8FD0F5" stroke-width="18" stroke-linecap="round" opacity="${k}"/>`}
+function splash(x,y,k){if(k<=0)return '';let s='';for(let i=0;i<9;i++){const a=-Math.PI*(0.1+0.8*i/8),d=30+70*k;s+=`<path d="M${x+Math.cos(a)*d} ${y+Math.sin(a)*d} q8 14 0 20 q-8 -6 0 -20 Z" fill="#8FD0F5" stroke="#2C6E99" stroke-width="3" opacity="${1-k*0.5}"/>`}return s}
+
+
+function grape(x,y,r=26){return `<circle cx="${x}" cy="${y}" r="${r}" fill="#7A4FA8" ${sw(5)}/><ellipse cx="${x-r*.35}" cy="${y-r*.4}" rx="${r*.3}" ry="${r*.2}" fill="#D8C4F0"/><path d="M${x} ${y-r} q4 -14 12 -18" fill="none" stroke="#5E7A3B" stroke-width="6" stroke-linecap="round"/>`}
+function grapeBunch(x,y,s=1){let g='';[[0,0],[-30,-4],[30,-4],[-15,24],[15,24],[0,48],[-44,-30],[0,-30],[44,-30]].forEach(([dx,dy])=>g+=grape(dx,-dy,22));return G(`translate(${x},${y}) scale(${s})`,g)}
+function sparkle(x,y,k=10){return `<path d="M${x} ${y-k} L${x+k*.25} ${y-k*.25} L${x+k} ${y} L${x+k*.25} ${y+k*.25} L${x} ${y+k} L${x-k*.25} ${y+k*.25} L${x-k} ${y} L${x-k*.25} ${y-k*.25} Z" fill="#FFF3B0" stroke="${K}" stroke-width="3"/>`}
+// コインの山（(x,y)=いちばん下、n枚）
+function coinStack(x,y,n,w=110,h=16){let s='';for(let i=0;i<n;i++){const yy=y-i*h;s+=`<path d="M${x-w/2} ${yy-h} V${yy} A${w/2} ${h*0.6} 0 0 0 ${x+w/2} ${yy} V${yy-h}" fill="#D9A83A" stroke="${K}" stroke-width="4"/>`}
+ if(n>0)s+=`<ellipse cx="${x}" cy="${y-n*h}" rx="${w/2}" ry="${h*0.6}" fill="#F2C94C" stroke="${K}" stroke-width="4"/><ellipse cx="${x}" cy="${y-n*h}" rx="${w/4}" ry="${h*0.3}" fill="none" stroke="#B88A2A" stroke-width="3"/>`;return s}
+
+
+// 雨（ななめの線。少しずつ下へ動く。点滅しない）
+function rain(t,k=1){const r=rng(9);let s='';for(let i=0;i<70;i++){const x=r()*1200-60,y0=r()*1920,y=(y0+t*900)%1920;s+=`<path d="M${x} ${y} l-18 46" stroke="#5B7FB0" stroke-width="6" stroke-linecap="round" opacity="${0.55*k}"/>`}return s}
+// 開いたかさ（手の向きの座標ではなく、画面の座標。(x,y)=持ち手の下）
+function umbrellaOpen(x,y,s=1,c='#E46B5B'){return G(`translate(${x},${y}) scale(${s})`,`<path d="M0 0 V-170" ${sw(8)}/><path d="M0 0 q0 20 -18 20" fill="none" ${sw(8)}/><path d="M-120 -150 Q0 -260 120 -150 Q90 -168 60 -150 Q30 -168 0 -150 Q-30 -168 -60 -150 Q-90 -168 -120 -150 Z" fill="${c}" ${sw(6)}/>`)}
+
+
+// おみやげの箱（リボン）。中心が原点
+function gift(s=1){return `<g transform="scale(${s})">${R(-60,-44,120,88,'#E9EEF2',`rx="8" ${sw(5)}`)}${R(-12,-44,24,88,'#E46B5B')}${R(-60,-10,120,20,'#E46B5B')}<path d="M0 -44 q-30 -30 -40 -4 q20 6 40 4 q30 -30 40 -4 q-20 6 -40 4" fill="#E46B5B" ${sw(4)}/>${R(-60,-44,120,88,'none',`rx="8" ${sw(5)}`)}</g>`}
+
+module.exports={gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
