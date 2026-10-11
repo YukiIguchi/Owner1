@@ -39,10 +39,10 @@ function gorilla(x,y,o={}){const {m=0,blink=false,nod=0,headRot=0,rot=0,dy=0,s=1
  const mid=o.mid?`<g transform="scale(${1/s}) rotate(${-rot}) translate(${-x},${-(y+dy)})">${o.mid}</g>`:'';
  return `<g transform="translate(${x},${y+dy}) rotate(${rot}) scale(${s})">${body}${mid}${R}${L}</g>`}
 // 人（特定の国や人種に見えないシンプルな形）。face: smile/neutral/shock/happy/worried/dizzy/calm。hand: [x,y]（人の座標系）
-// 追加の指定：hand2（画面の右側の腕）、hk/hk2=手の形 'fist'/'thumb'/'open'/'point'、cross（腕組み）、headRot/headDX（首をかしげる・ふる）、
-//   hairColor、glasses、headphones、cap（ぼうしの色）、coat（白衣）、steth（聴診器）、blink、look=[dx,dy]、talk=口の開き 0〜1
+// 追加の指定：hand2（画面の右側の腕）、hk/hk2=手の形 'fist'/'thumb'/'open'/'point'、cross（腕組み）、headRot/headDX/headDY（首をかしげる・ふる・うなずく）、
+//   hairColor、glasses、headphones、cap（ぼうしの色）、coat（白衣）、steth（聴診器）、blink、look=[dx,dy]、talk=口の開き 0〜1、front（左の腕を顔の前に描く）
 function person(x,y,s,o={}){const {shirt='#4F7A66',shirtLine='#2D4A3D',apron=false,hair='short',hat=null,face='smile',shock=1,hand:hd=null,thumb=false,blown=0,sweat=0,skin='#E2B892',skinLine='#7A5638',
-  hand2=null,thumb2=false,hk=null,hk2=null,cross=false,headRot=0,headDX=0,hairColor=null,glasses=false,headphones=false,cap=null,coat=false,steth=false,blink=false,look=[0,0],talk=0}=o;
+  hand2=null,thumb2=false,hk=null,hk2=null,cross=false,headRot=0,headDX=0,hairColor=null,glasses=false,headphones=false,cap=null,coat=false,steth=false,blink=false,look=[0,0],talk=0,front=false,headDY=0}=o;
  const HC=hairColor||{short:'#3B2A22',long:'#4A3324',bun:'#2E2420'}[hair]||'#3B2A22';
  const hairP={short:`<path d="M-66 -72 Q-74 -146 0 -142 Q74 -146 66 -72 Q58 -100 30 -106 Q0 -96 -34 -108 Q-58 -102 -66 -72 Z" fill="${HC}"/>`,
   long:`<path d="M-66 -70 Q-70 -150 0 -140 Q70 -150 66 -70 L70 0 Q50 -20 48 -80 Q0 -112 -48 -80 Q-50 -20 -70 0 Z" fill="${HC}"/>`,
@@ -85,11 +85,11 @@ function person(x,y,s,o={}){const {shirt='#4F7A66',shirtLine='#2D4A3D',apron=fal
  return `<g transform="translate(${x},${y}) scale(${s})">
  <rect x="-72" y="-10" width="144" height="200" rx="32" fill="${shirt}" stroke="${shirtLine}" stroke-width="5"/>${coat?coatP:`<path d="M-30 -10 L0 22 L30 -10" fill="#F6F2EA" stroke="${shirtLine}" stroke-width="4"/>`}${stethP}
  ${apron?`<rect x="-55" y="30" width="110" height="152" rx="12" fill="#F6F2EA"/><path d="M-55 40 L-40 -8 M55 40 L40 -8" stroke="#F6F2EA" stroke-width="10"/><rect x="-28" y="80" width="56" height="34" rx="6" fill="none" stroke="#C9BFAE" stroke-width="4"/>`:''}
- ${cross?armsX:armL+armR}
- <g transform="translate(${headDX},0) rotate(${headRot} 0 -10)">
+ ${cross?armsX:front?armR:armL+armR}
+ <g transform="translate(${headDX},${headDY}) rotate(${headRot} 0 -10)">
  <circle cx="62" cy="-70" r="14" fill="${skin}" stroke="${skinLine}" stroke-width="4"/><circle cx="-62" cy="-70" r="14" fill="${skin}" stroke="${skinLine}" stroke-width="4"/>
  <circle cx="0" cy="-70" r="64" fill="${skin}" stroke="${skinLine}" stroke-width="5"/>${hairP}${blownP}
- <path d="M-2 -66 q8 12 0 18" stroke="#B98C66" stroke-width="5" fill="none" stroke-linecap="round"/>${brow}${eyes}${glassesP}${mouth}${cheeks}${sweatP}${capP}${phonesP}${hatP}</g></g>`}
+ <path d="M-2 -66 q8 12 0 18" stroke="#B98C66" stroke-width="5" fill="none" stroke-linecap="round"/>${brow}${eyes}${glassesP}${mouth}${cheeks}${sweatP}${capP}${phonesP}${hatP}</g>${front&&!cross?armL:''}</g>`}
 // 全体を少し大きくして、主役を画面の下に大きく見せる
 const Z=s=>`<g transform="translate(540,1920) scale(1.32) translate(-540,-1920)">${s}</g>`;
 const svgWrap=(bg,inner)=>`<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920"><rect width="1080" height="1920" fill="${bg}"/>${Z(inner)}</svg>`;
@@ -102,4 +102,6 @@ async function renderGag(OUT,DUR,frame,bgSvg){fs.mkdirSync(OUT,{recursive:true})
   await p.evaluate(h=>document.getElementById('s').innerHTML=h,bgSvg);await p.screenshot({path:path.join(OUT,'prev_bg.png')});await b.close();return}
  for(let i=0;i<Math.round(DUR*FPS);i++)await shot(i/FPS,path.join(OUT,`g${String(i).padStart(4,'0')}.png`));
  fs.writeFileSync(path.join(OUT,'bg.svg'),bgSvg.replace('</svg>','<rect width="1080" height="1920" fill="#fff" fill-opacity=".72"/></svg>'));await b.close()}
-module.exports={FPS,ease,cl,lerp,seq,seg,arm,hand,gorilla,person,Z,svgWrap,renderGag,wild};
+// 手首を (wx,wy) に置きたいときの腕の目標。side=1 右腕 / -1 左腕。gx,gy=ゴリラの位置
+function wristAt(gx,gy,wx,wy,side=1,reach=50,s=1){const sx=gx+175*side*s,sy=gy+140*s;const d=Math.hypot(wx-sx,wy-sy)||1;return {tx:wx+(wx-sx)/d*reach,ty:wy+(wy-sy)/d*reach,reach}}
+module.exports={wristAt,FPS,ease,cl,lerp,seq,seg,arm,hand,gorilla,person,Z,svgWrap,renderGag,wild};
