@@ -356,4 +356,44 @@ function clipboard(s=1){return `<g transform="scale(${s})">${R(-70,-90,140,180,'
 // 郵便受け（柱つき）。(x,y)=柱の下
 function mailbox(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(-10,-200,20,200,'#8A6A4A',sw(4))+R(-70,-300,140,110,'#E46B5B',`rx="14" ${sw(6)}`)+R(-46,-270,92,16,'#3A3026',`rx="6"`))}
 
-module.exports={clipboard,mailbox,carBack,keepLeftSign,tinyBikeBack,bell,iceBag,waterDrops,bed,burger,fries,paperBag,swivelChair,monitor,spinLines,shower,foamHead,bigSun,heatLines,waterBottle,swirl,tablet,camera,croissant,gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
+
+// 砂糖の袋（中心が原点）と、砂糖の山
+function sugarBag(s=1,r=0){return `<g transform="rotate(${r}) scale(${s})"><path d="M-44 -60 H44 L50 60 H-50 Z" fill="#FFFFFF" ${sw(5)}/><path d="M-44 -60 l11 -12 l11 12 l11 -12 l11 12 l11 -12 l11 12 l11 -12 l11 12" fill="none" ${sw(4)}/><g transform="translate(0,10)">${R(-18,-18,36,36,'#F4F6F8',`rx="4" stroke="#9AA6B2" stroke-width="4"`)}${R(-6,-30,12,12,'#F4F6F8',`stroke="#9AA6B2" stroke-width="3"`)}</g></g>`}
+function sugarHill(x,y,h,w=150){if(h<=0)return '';const r=rng(12);let g='';for(let i=0;i<26;i++){const k=r();g+=`<circle cx="${x+(r()*2-1)*w*(1-k)*0.8}" cy="${y-k*h*0.9}" r="3" fill="#C9D2D9"/>`}
+ return `<path d="M${x-w} ${y} Q${x-w*0.6} ${y-h*0.5} ${x-w*0.15} ${y-h} Q${x} ${y-h*1.08} ${x+w*0.15} ${y-h} Q${x+w*0.6} ${y-h*0.5} ${x+w} ${y} Z" fill="#FFFFFF" ${sw(5)}/>`+g}
+function coffeeCup(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,`<ellipse cx="0" cy="10" rx="110" ry="22" fill="#FFFFFF" ${sw(5)}/><path d="M-70 -80 L70 -80 L58 4 Q0 22 -58 4 Z" fill="#FFFFFF" ${sw(5)}/><path d="M70 -60 Q110 -54 100 -20 Q92 0 62 -6" fill="none" ${sw(8)}/><ellipse cx="0" cy="-80" rx="70" ry="16" fill="#6B4226" ${sw(4)}/>`)}
+
+
+// お弁当（上から少しななめ）。中心が原点
+function bento(s=1){return `<g transform="scale(${s})">${R(-80,-40,160,80,'#2E3440',`rx="10" ${sw(5)}`)}${R(-70,-32,70,64,'#FFFFFF',`rx="6"`)}<circle cx="-35" cy="0" r="9" fill="#E46B5B"/>${R(6,-32,64,30,'#E0A85A',`rx="6"`)}${R(6,4,30,28,'#7BC46A',`rx="6"`)}${R(40,4,30,28,'#F2C94C',`rx="6"`)}</g>`}
+// 電子レンジ。k=ターンテーブルの角度（度）、on=中のあかり 0〜1、open=ドア 0〜1、inner=中の物
+function microwave(x,y,o={}){const {k=0,on=0,open=0,inner=''}=o;
+ let s=R(x,y-200,300,200,'#E9EEF2',`rx="16" ${sw(6)}`)+R(x+20,y-180,190,160,on>0?'#FFE9A8':'#3B4252',`rx="10" ${sw(5)}`);
+ if(open<0.5){const a=k*Math.PI/180;s+=`<g transform="translate(${x+115+Math.cos(a)*24},${y-80+Math.sin(a)*6})">${inner}</g>`;s+=R(x+20,y-180,190,160,'#9CC9E3',`rx="10" opacity="${on>0?0.25:0.5}"`)}
+ s+=R(x+225,y-180,55,160,'#C9D2D9',`rx="8" ${sw(4)}`)+`<circle cx="${x+252}" cy="${y-140}" r="12" fill="#FFFFFF" ${sw(4)}/><circle cx="${x+252}" cy="${y-100}" r="12" fill="#FFFFFF" ${sw(4)}/>`+R(x+236,y-70,32,34,on>0?'#3FA66B':'#FFFFFF',`rx="6" ${sw(4)}`);
+ if(open>0)s+=R(x+20-170*open,y-180,190*(1-open*0.2),160,'#C9D2D9',`rx="10" opacity="${0.9}" ${sw(5)}`);
+ return s}
+// 太陽のようにやさしく光る（光の線がゆっくり広がる。点滅しない）
+function glow(x,y,k,n=12){if(k<=0)return '';let s=`<circle cx="${x}" cy="${y}" r="${60+90*k}" fill="#FFE9A8" opacity="${0.45*k}"/>`;for(let i=0;i<n;i++){const a=i*Math.PI*2/n,r1=70+40*k,r2=r1+50+80*k;s+=`<path d="M${x+Math.cos(a)*r1} ${y+Math.sin(a)*r1} L${x+Math.cos(a)*r2} ${y+Math.sin(a)*r2}" stroke="#F2A93B" stroke-width="12" stroke-linecap="round" opacity="${Math.min(1,k*1.5)}"/>`}return s}
+
+
+const eggIcon=(s=1)=>`<g transform="scale(${s})"><ellipse cx="0" cy="0" rx="18" ry="24" fill="#FFFFFF" ${sw(4)}/><circle cx="0" cy="4" r="9" fill="#F2C94C"/></g>`;
+const bananaIcon=(s=1)=>`<g transform="scale(${s})"><path d="M-22 -4 Q0 26 24 -8 Q26 -14 22 -14 Q0 10 -18 -12 Z" fill="#FFD94A" ${sw(4)}/></g>`;
+// サンドイッチ（三角が2つ）。kind='egg'/'banana'。旗に絵
+function sandwich(x,y,s=1,kind='egg'){const fill=kind==='egg'?`<path d="M-80 0 L0 -100 L0 0 Z" fill="#F2C94C"/>`:`${[[-50,-14],[-30,-40],[-14,-66]].map(([cx,cy])=>`<circle cx="${cx}" cy="${cy}" r="14" fill="#FFF3C4" stroke="#E0B23A" stroke-width="3"/>`).join('')}`;
+ const tri=(dx)=>`<g transform="translate(${dx},0)"><path d="M-86 6 L0 -108 L0 6 Z" fill="#F6EBD2" ${sw(5)}/><path d="M-74 0 L-4 -90 L-4 0 Z" fill="${kind==='egg'?'#F2C94C':'#FFF8E0'}"/>${kind==='banana'?fill:''}</g>`;
+ return G(`translate(${x},${y}) scale(${s})`,`<ellipse cx="0" cy="10" rx="130" ry="26" fill="#FFFFFF" ${sw(5)}/>`+tri(-10)+`<g transform="scale(-1,1)">${tri(-10)}</g>`
+  +`<path d="M30 -60 V-170" stroke="#A97C52" stroke-width="6"/>`+R(30,-200,80,56,'#FFFFFF',`rx="8" ${sw(4)}`)+`<g transform="translate(70,-172)">${kind==='egg'?eggIcon(0.85):bananaIcon(1.1)}</g>`)}
+
+
+function ladder(x,y,h=700,w=110,a=0){let s=`<g transform="rotate(${a} ${x+w/2} ${y})">`+R(x,y-h,16,h,'#C9A46A',sw(5))+R(x+w-16,y-h,16,h,'#C9A46A',sw(5));for(let i=1;i<8;i++)s+=R(x,y-h*i/8-6,w,12,'#C9A46A',sw(4));return s+'</g>'}
+// 救急車（文字なし。十字の印）。右向き
+function ambulance(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,R(0,-190,330,160,'#FFFFFF',`rx="14" ${sw()}`)+R(0,-110,330,22,'#E46B5B')+`<path d="M330 -30 V-150 Q330 -170 350 -170 H400 Q430 -170 440 -120 L450 -80 V-30 Z" fill="#FFFFFF" ${sw()}/>`+R(350,-156,60,50,'#CFE6F5',sw(4))
+ +`<path d="M150 -170 H178 V-150 H198 V-122 H178 V-102 H150 V-122 H130 V-150 H150 Z" fill="#E46B5B" ${sw(3)}/>`+R(150,-204,50,16,'#E46B5B',`rx="6" ${sw(4)}`)+R(-6,-36,460,20,'#8C96A0',sw(4))+[70,250,380].map(cx=>`<circle cx="${cx}" cy="0" r="30" fill="#3B4252" ${sw(5)}/>`).join(''))}
+// すわった人の足（パンツと靴）。(x,y)=腰、右へのびる
+function legs(x,y,s=1,c='#3E5F8A'){return G(`translate(${x},${y}) scale(${s})`,`<path d="M0 -10 H180 Q200 -10 200 10 Q200 30 180 30 H0 Z" fill="${c}" ${sw(5)}/><path d="M0 30 H170 Q190 30 190 50 Q190 70 170 70 H0 Z" fill="${c}" ${sw(5)}/>`+`<path d="M196 -26 Q236 -26 236 6 Q236 24 196 24 Z" fill="#5B4A3C" ${sw(5)}/><path d="M186 16 Q226 16 226 48 Q226 66 186 66 Z" fill="#5B4A3C" ${sw(5)}/>`)}
+// スマホ（大きく持つ）。disp=画面の数字
+function bigPhone(x,y,s=1,disp=''){return G(`translate(${x},${y}) scale(${s})`,R(-60,-110,120,220,'#2E3440',`rx="18" ${sw(5)}`)+R(-50,-96,100,190,'#DCEFFA',`rx="8"`)+`<text x="0" y="-56" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="34" fill="${K}">${disp}</text>`
+ +['1','2','3','4','5','6','7','8','9','','0',''].map((k,i)=>k?`<circle cx="${-30+(i%3)*30}" cy="${-20+Math.floor(i/3)*30}" r="12" fill="${disp.endsWith(k)&&disp.length?'#9CC9E3':'#FFFFFF'}" stroke="${K}" stroke-width="2.5"/><text x="${-30+(i%3)*30}" y="${-15+Math.floor(i/3)*30}" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="14" fill="${K}">${k}</text>`:'').join(''))}
+
+module.exports={ladder,ambulance,legs,bigPhone,eggIcon,bananaIcon,sandwich,bento,microwave,glow,sugarBag,sugarHill,coffeeCup,clipboard,mailbox,carBack,keepLeftSign,tinyBikeBack,bell,iceBag,waterDrops,bed,burger,fries,paperBag,swivelChair,monitor,spinLines,shower,foamHead,bigSun,heatLines,waterBottle,swirl,tablet,camera,croissant,gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};

@@ -6,9 +6,10 @@ const seq=(t,a,b)=>ease(cl((t-a)/(b-a)));   // a〜b秒で 0→1
 const FUR='#2B2D33',HANDC='#3A3D45',LINE='#26282D';
 
 // 毛のある腕の部品（根もとw1→先w2）
-function seg(x1,y1,w1,x2,y2,w2){const an=Math.atan2(y2-y1,x2-x1),nx=Math.cos(an+Math.PI/2),ny=Math.sin(an+Math.PI/2);let top='',bot='';
+function seg(x1,y1,w1,x2,y2,w2,rim=false){const an=Math.atan2(y2-y1,x2-x1),nx=Math.cos(an+Math.PI/2),ny=Math.sin(an+Math.PI/2);let top='',bot='';
  for(let i=0;i<=9;i++){const k=i/9,x=x1+(x2-x1)*k,y=y1+(y2-y1)*k,w=w1+(w2-w1)*k,f=(i%2?1:0)*11;top+=`L${x+nx*(w+f)} ${y+ny*(w+f)} `;bot=`L${x-nx*(w+f*.6)} ${y-ny*(w+f*.6)} `+bot}
- return `<path d="M${x1+nx*w1} ${y1+ny*w1} ${top}${bot}Z" fill="${FUR}"/><circle cx="${x1}" cy="${y1}" r="${w1}" fill="${FUR}"/><circle cx="${x2}" cy="${y2}" r="${w2}" fill="${FUR}"/>`}
+ const st=rim?` stroke="#7C808C" stroke-width="7" stroke-linejoin="round" paint-order="stroke"`:'';
+ return `<path d="M${x1+nx*w1} ${y1+ny*w1} ${top}${bot}Z" fill="${FUR}"${st}/><circle cx="${x1}" cy="${y1}" r="${w1}" fill="${FUR}"/><circle cx="${x2}" cy="${y2}" r="${w2}" fill="${FUR}"${st}/>`}
 function shoulder(sx,sy){let p='';for(let i=0;i<=16;i++){const t=Math.PI*1.05+Math.PI*0.9*i/16,r=i%2?82:96;p+=(i?'L':'M')+(sx+Math.cos(t)*r)+' '+(sy+Math.sin(t)*r*0.85)}
  return `<ellipse cx="${sx}" cy="${sy}" rx="82" ry="70" fill="${FUR}"/><path d="${p}" fill="${FUR}"/>`}
 // 手（手首の位置・向き）。kind: point=人さし指 / grip=にぎる / open=手のひら / thumb=親指を立てる。item: 手に持つ物のSVG（手の向きの座標）
@@ -24,12 +25,12 @@ function hand(wx,wy,deg,kind='point',item='',HC=HANDC){
  if(kind==='pinch')f=`<path d="M50 -18 Q92 -30 106 -22 Q112 -14 104 -10 Q90 -10 52 -2 Z" fill="${HC}" stroke="${LINE}" stroke-width="3"/><path d="M40 22 Q90 22 104 12 Q112 18 104 26 Q86 38 40 36 Z" fill="${HC}" stroke="${LINE}" stroke-width="3"/>`;
  return `<g transform="translate(${wx},${wy}) rotate(${deg})">${item&&kind==='grip'?item:''}${palm}${f}${kind==='thumb'||kind==='pinch'?'':thumbS}${knuck}${item&&kind!=='grip'?item:''}</g>`}
 // 腕：肩(sx,sy)から目標(tx,ty)へ。reach: 指先と目標の距離。bend: ひじを曲げる向き(1=下 -1=上)
-function arm(sx,sy,tx,ty,o={}){const {kind='point',item='',reach=125,U=150,F=140,bend=1,fixDeg=null,color=HANDC}=o;
+function arm(sx,sy,tx,ty,o={}){const {kind='point',item='',reach=125,U=150,F=140,bend=1,fixDeg=null,color=HANDC,rim=false}=o;   // rim：体と重なっても見えるよう、腕のふちを明るくする
  const a0=Math.atan2(ty-sy,tx-sx);const wx0=tx-Math.cos(a0)*reach,wy0=ty-Math.sin(a0)*reach;
  const d=Math.max(20,Math.min(Math.hypot(wx0-sx,wy0-sy),U+F-2));const aw=Math.atan2(wy0-sy,wx0-sx);const wx=sx+Math.cos(aw)*d,wy=sy+Math.sin(aw)*d;
  const al=Math.acos(cl((U*U+d*d-F*F)/(2*U*d),-1,1));const e1=[sx+Math.cos(aw+al)*U,sy+Math.sin(aw+al)*U],e2=[sx+Math.cos(aw-al)*U,sy+Math.sin(aw-al)*U];
  const [ex,ey]=(e1[1]>e2[1])===(bend>0)?e1:e2;const deg=fixDeg??Math.atan2(ty-wy,tx-wx)*180/Math.PI;
- return `${shoulder(sx,sy)}${seg(sx,sy,58,ex,ey,42)}${seg(ex,ey,40,wx,wy,30)}${hand(wx,wy,deg,kind,item,color)}`}
+ return `${shoulder(sx,sy)}${seg(sx,sy,58,ex,ey,42,rim)}${seg(ex,ey,40,wx,wy,30,rim)}${hand(wx,wy,deg,kind,item,color)}`}
 // ゴリラ（上半身）。(x,y)=体の中心。o.right / o.left = {tx,ty,kind,item,...} で腕を動かす。なければ下におろす
 function down(sx,sy,dir){const an=dir>0?Math.PI*0.47:Math.PI*0.53,x2=sx+Math.cos(an)*230,y2=sy+Math.sin(an)*230;return shoulder(sx,sy)+seg(sx,sy,62,x2,y2,50)}
 function gorilla(x,y,o={}){const {m=0,blink=false,nod=0,headRot=0,rot=0,dy=0,s=1,right=null,left=null}=o;
