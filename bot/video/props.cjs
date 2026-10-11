@@ -290,4 +290,34 @@ function umbrellaOpen(x,y,s=1,c='#E46B5B'){return G(`translate(${x},${y}) scale(
 // おみやげの箱（リボン）。中心が原点
 function gift(s=1){return `<g transform="scale(${s})">${R(-60,-44,120,88,'#E9EEF2',`rx="8" ${sw(5)}`)}${R(-12,-44,24,88,'#E46B5B')}${R(-60,-10,120,20,'#E46B5B')}<path d="M0 -44 q-30 -30 -40 -4 q20 6 40 4 q30 -30 40 -4 q-20 6 -40 4" fill="#E46B5B" ${sw(4)}/>${R(-60,-44,120,88,'none',`rx="8" ${sw(5)}`)}</g>`}
 
-module.exports={gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
+
+// カメラ（形だけ。フラッシュは光らせない）。中心が原点
+function camera(s=1){return `<g transform="scale(${s})">${R(-60,-38,120,80,'#3B4252',`rx="12" ${sw(5)}`)}${R(-40,-52,36,18,'#3B4252',`rx="4" ${sw(4)}`)}<circle cx="6" cy="2" r="26" fill="#9CC9E3" ${sw(5)}/><circle cx="6" cy="2" r="12" fill="#2B2D33"/></g>`}
+function croissant(x,y,s=1){return G(`translate(${x},${y}) scale(${s})`,`<path d="M-60 10 Q-40 -40 0 -40 Q40 -40 60 10 Q30 -6 0 -4 Q-30 -6 -60 10 Z" fill="#E0A85A" ${sw(5)}/><path d="M-30 -30 l8 22 M0 -38 v30 M30 -30 l-8 22" stroke="#B87A32" stroke-width="5"/>`)}
+
+
+// ぐるぐるの線（こまっている）
+function swirl(x,y,a=0,s=1){let d='';for(let i=0;i<=40;i++){const th=i*0.45,r=4+i*1.3;d+=(i?'L':'M')+(Math.cos(th)*r).toFixed(1)+' '+(Math.sin(th)*r*0.7).toFixed(1)+' '}return G(`translate(${x},${y}) rotate(${a}) scale(${s})`,`<path d="${d}" fill="none" stroke="${K}" stroke-width="6" stroke-linecap="round"/>`)}
+// タブレット（画面に中身 inner を描く。中心が原点）
+function tablet(s=1,inner=''){return `<g transform="scale(${s})">${R(-130,-90,260,180,'#2E3440',`rx="18" ${sw(6)}`)}${R(-112,-74,224,148,'#DCEFFA',`rx="8"`)}<clipPath id="tab"><rect x="-112" y="-74" width="224" height="148" rx="8"/></clipPath><g clip-path="url(#tab)">${inner}</g><circle cx="118" cy="0" r="5" fill="#9AA6B2"/></g>`}
+
+
+// 強い日ざしの太陽（光の線は動かない）
+function bigSun(x,y,r=90){let s='';for(let i=0;i<12;i++){const a=i*Math.PI/6;s+=`<path d="M${x+Math.cos(a)*(r+18)} ${y+Math.sin(a)*(r+18)} L${x+Math.cos(a)*(r+58)} ${y+Math.sin(a)*(r+58)}" stroke="#F2A93B" stroke-width="14" stroke-linecap="round"/>`}return s+`<circle cx="${x}" cy="${y}" r="${r}" fill="#FFD45C" ${sw(6)}/>`}
+// ゆらゆらした熱の線
+function heatLines(t,y0=1700){let s='';for(let i=0;i<6;i++){const x=120+i*170,ph=t*2+i;let d=`M${x} ${y0}`;for(let k=1;k<=6;k++)d+=` Q${x+(k%2?18:-18)} ${y0-k*40+20} ${x} ${y0-k*40}`;s+=`<path d="${d}" fill="none" stroke="#E89A5A" stroke-width="6" stroke-linecap="round" opacity="${0.35+0.25*Math.sin(ph)}" transform="translate(0,${-((t*30+i*20)%40)})"/>`}return s}
+// 水のボトル（手の向きの座標。x の正の向きが口）。k=残りの水 0〜1
+function waterBottle(k=1){return `${R(10,-30,150,60,'#E6F4FB',`rx="22" ${sw(5)}`)}${R(14+136*(1-k),-26,136*k,52,'#7CC4F2',`rx="18"`)}${R(160,-18,26,36,'#3FA66B',`rx="6" ${sw(4)}`)}${R(10,-30,150,60,'none',`rx="22" ${sw(5)}`)}`}
+
+
+// シャワー（かべのじゃ口と管とシャワーヘッド）。on=水の線 0〜1
+function shower(x,y,on){let s=`<path d="M${x+260} ${y+600} V${y+40} Q${x+260} ${y} ${x+220} ${y} H${x+80}" fill="none" stroke="${K}" stroke-width="22" stroke-linecap="round"/><path d="M${x+260} ${y+600} V${y+40} Q${x+260} ${y} ${x+220} ${y} H${x+80}" fill="none" stroke="#C9D2D9" stroke-width="12" stroke-linecap="round"/>`
+ +`<path d="M${x+100} ${y-10} L${x-10} ${y+30} L${x+10} ${y+70} L${x+110} ${y+20} Z" fill="#C9D2D9" ${sw(5)}/>`+`<circle cx="${x+260}" cy="${y+620}" r="26" fill="#C9D2D9" ${sw(5)}/>`;
+ if(on>0)for(let i=0;i<7;i++){const sx=x-4+i*16,len=300*on;s+=`<path d="M${sx} ${y+60} L${sx-30-i*6} ${y+60+len}" stroke="#7CC4F2" stroke-width="7" stroke-linecap="round" stroke-dasharray="26 18"/>`}
+ return s}
+// 頭の上の泡の山（(x,y)=頭のてっぺん、h=高さ）
+function foamHead(x,y,h,seed=8){const r=rng(seed);let s='';const n=Math.floor(10+h/12);for(let i=0;i<n;i++){const k=r(),yy=y-k*h,w=lerpN(170,60,k),xx=x+(r()*2-1)*w,rad=26+r()*30;
+ s+=`<circle cx="${xx}" cy="${yy}" r="${rad}" fill="#FFFFFF" stroke="#9FC4DC" stroke-width="5"/><circle cx="${xx-rad*.3}" cy="${yy-rad*.3}" r="${rad*.18}" fill="#DCEFFA"/>`}return s}
+const lerpN=(a,b,k)=>a+(b-a)*k;
+
+module.exports={shower,foamHead,bigSun,heatLines,waterBottle,swirl,tablet,camera,croissant,gift,rain,umbrellaOpen,grape,grapeBunch,sparkle,coinStack,washletPanel,waterJet,splash,nightSky,parrot,nightcap,sink,foam,keypad,keyPos,toaster,smoke,fireTruck,gFoot,chair,stool,bump,toiletPicto,guideSign,train,stopSign,bench,beachBall,sunIcon,paperTower,school,things,idCard,toteBag,stamp,card,cardReader,register,office,garbageTruck,arrowR,shelfIcon,boxPile,siren,cat,cane,thermometer,crossSign,food,tinyBag,pointer,trashStation,lamp,frame,table,formBoard,pen,logPencil,penHolder,truck,awning,plate,K,sw,R,G,rng,wall,floor,skyBg,windowFrame,tree,building,house,ground,desk,counter,shelf,door,paper,paperStack,banana,bananaBunch,bananaPeel,box,clock,calendar7,fireIcon,soundWaves,windLines,bubble,scribbleBubble,cup,steam,hatShape,phone,garbageBag};
